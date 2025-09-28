@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 # Page Config
 st.set_page_config(page_title="ITD105: Student Performance Analysis Dashboard", page_icon=":chart_with_upwards_trend:", layout="wide")
@@ -178,6 +179,72 @@ if uploaded_file is not None:
             - **Age Distribution**: Students aged {filtered_df['age'].min()}-{filtered_df['age'].max()} years
             - **Study Patterns**: Average study time is {filtered_df['studytime'].mean():.1f}/4 scale
             """)
+
+        # NEW: Bar Charts Section
+        st.subheader("📊 Categorical Analysis - Bar Charts")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Bar chart: Average Grade by Study Time
+            study_time_performance = filtered_df.groupby('studytime')['Average_Grade'].mean().reset_index()
+            fig_bar_study = px.bar(
+                study_time_performance, 
+                x='studytime', 
+                y='Average_Grade',
+                title='Average Grade by Study Time Level',
+                labels={'studytime': 'Study Time Level (1=<2hrs, 2=2-5hrs, 3=5-10hrs, 4=>10hrs)', 
+                       'Average_Grade': 'Average Grade'},
+                color='Average_Grade',
+                color_continuous_scale='viridis'
+            )
+            st.plotly_chart(fig_bar_study, use_container_width=True)
+        
+        with col2:
+            # Bar chart: Grade Distribution by School and Gender
+            school_gender_perf = filtered_df.groupby(['school', 'sex'])['Average_Grade'].mean().reset_index()
+            fig_bar_school_gender = px.bar(
+                school_gender_perf,
+                x='school',
+                y='Average_Grade', 
+                color='sex',
+                title='Average Grade by School and Gender',
+                labels={'school': 'School', 'Average_Grade': 'Average Grade', 'sex': 'Gender'},
+                barmode='group'
+            )
+            st.plotly_chart(fig_bar_school_gender, use_container_width=True)
+        
+        # Additional bar charts
+        col3, col4 = st.columns(2)
+        
+        with col3:
+            # Bar chart: Failure Distribution
+            failure_dist = filtered_df['failures'].value_counts().sort_index().reset_index()
+            failure_dist.columns = ['failures', 'count']
+            fig_bar_failures = px.bar(
+                failure_dist,
+                x='failures',
+                y='count', 
+                title='Number of Students by Past Failures',
+                labels={'failures': 'Number of Past Failures', 'count': 'Number of Students'},
+                color='count',
+                color_continuous_scale='reds'
+            )
+            st.plotly_chart(fig_bar_failures, use_container_width=True)
+        
+        with col4:
+            # Bar chart: Performance by Address Type
+            address_perf = filtered_df.groupby('address')['Average_Grade'].mean().reset_index()
+            fig_bar_address = px.bar(
+                address_perf,
+                x='address', 
+                y='Average_Grade',
+                title='Average Grade by Address Type',
+                labels={'address': 'Address Type (U=Urban, R=Rural)', 'Average_Grade': 'Average Grade'},
+                color='Average_Grade',
+                color_continuous_scale='blues'
+            )
+            st.plotly_chart(fig_bar_address, use_container_width=True)
 
 
     with tab2:
