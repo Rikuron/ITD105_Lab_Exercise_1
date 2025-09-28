@@ -4,6 +4,18 @@
 
 A comprehensive web-based dashboard built with Streamlit for analyzing student academic performance data. This project was developed as part of the ITD105 course requirements, demonstrating exploratory data analysis techniques and interactive data visualization.
 
+## 📚 Project Documentation
+
+| File | Description |
+|------|-------------|
+| **[ANSWERS.md](ANSWERS.md)** | 📊 Detailed analysis answering research questions |
+| **[student_performance.py](student_performance.py)** | 🎯 Interactive Streamlit dashboard |
+| **[requirements.txt](requirements.txt)** | 📋 Required Python packages |
+
+### Quick Links:
+- 🔍 **[View Analysis Results →](ANSWERS.md)**
+- 🚀 **[Run the Dashboard →](#installation)**
+
 ## 📋 Table of Contents
 
 - [Overview](#overview)
