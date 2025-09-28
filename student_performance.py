@@ -180,72 +180,6 @@ if uploaded_file is not None:
             - **Study Patterns**: Average study time is {filtered_df['studytime'].mean():.1f}/4 scale
             """)
 
-        # NEW: Bar Charts Section
-        st.subheader("📊 Categorical Analysis - Bar Charts")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            # Bar chart: Average Grade by Study Time
-            study_time_performance = filtered_df.groupby('studytime')['Average_Grade'].mean().reset_index()
-            fig_bar_study = px.bar(
-                study_time_performance, 
-                x='studytime', 
-                y='Average_Grade',
-                title='Average Grade by Study Time Level',
-                labels={'studytime': 'Study Time Level (1=<2hrs, 2=2-5hrs, 3=5-10hrs, 4=>10hrs)', 
-                       'Average_Grade': 'Average Grade'},
-                color='Average_Grade',
-                color_continuous_scale='viridis'
-            )
-            st.plotly_chart(fig_bar_study, use_container_width=True)
-        
-        with col2:
-            # Bar chart: Grade Distribution by School and Gender
-            school_gender_perf = filtered_df.groupby(['school', 'sex'])['Average_Grade'].mean().reset_index()
-            fig_bar_school_gender = px.bar(
-                school_gender_perf,
-                x='school',
-                y='Average_Grade', 
-                color='sex',
-                title='Average Grade by School and Gender',
-                labels={'school': 'School', 'Average_Grade': 'Average Grade', 'sex': 'Gender'},
-                barmode='group'
-            )
-            st.plotly_chart(fig_bar_school_gender, use_container_width=True)
-        
-        # Additional bar charts
-        col3, col4 = st.columns(2)
-        
-        with col3:
-            # Bar chart: Failure Distribution
-            failure_dist = filtered_df['failures'].value_counts().sort_index().reset_index()
-            failure_dist.columns = ['failures', 'count']
-            fig_bar_failures = px.bar(
-                failure_dist,
-                x='failures',
-                y='count', 
-                title='Number of Students by Past Failures',
-                labels={'failures': 'Number of Past Failures', 'count': 'Number of Students'},
-                color='count',
-                color_continuous_scale='reds'
-            )
-            st.plotly_chart(fig_bar_failures, use_container_width=True)
-        
-        with col4:
-            # Bar chart: Performance by Address Type
-            address_perf = filtered_df.groupby('address')['Average_Grade'].mean().reset_index()
-            fig_bar_address = px.bar(
-                address_perf,
-                x='address', 
-                y='Average_Grade',
-                title='Average Grade by Address Type',
-                labels={'address': 'Address Type (U=Urban, R=Rural)', 'Average_Grade': 'Average Grade'},
-                color='Average_Grade',
-                color_continuous_scale='blues'
-            )
-            st.plotly_chart(fig_bar_address, use_container_width=True)
-
 
     with tab2:
         st.header("📈 Performance Analysis")
@@ -361,131 +295,294 @@ if uploaded_file is not None:
         """)
 
 
-        with tab3:
-            st.header("🔍 Detailed Insights")
+        # NEW: Bar Charts Section
+        st.subheader("📊 Categorical Analysis - Bar Charts")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Bar chart: Average Grade by Study Time
+            study_time_performance = filtered_df.groupby('studytime')['Average_Grade'].mean().reset_index()
+            fig_bar_study = px.bar(
+                study_time_performance, 
+                x='studytime', 
+                y='Average_Grade',
+                title='Average Grade by Study Time Level',
+                labels={'studytime': '''Study Time (1: <2hrs, 2: 2-5hrs, 3: 5-10hrs, 4: >10hrs)''', 
+                       'Average_Grade': 'Average Grade'},
+                color='Average_Grade',
+                color_continuous_scale='viridis'
+            )
+            st.plotly_chart(fig_bar_study, use_container_width=True)
+        
+        with col2:
+            # Bar chart: Grade Distribution by School and Gender
+            school_gender_perf = filtered_df.groupby(['school', 'sex'])['Average_Grade'].mean().reset_index()
+            fig_bar_school_gender = px.bar(
+                school_gender_perf,
+                x='school',
+                y='Average_Grade', 
+                color='sex',
+                title='Average Grade by School and Gender',
+                labels={'school': 'School', 'Average_Grade': 'Average Grade', 'sex': 'Gender'},
+                barmode='group'
+            )
+            st.plotly_chart(fig_bar_school_gender, use_container_width=True)
+        
+        # Additional bar charts
+        col3, col4 = st.columns(2)
+        
+        with col3:
+            # Bar chart: Failure Distribution
+            failure_dist = filtered_df['failures'].value_counts().sort_index().reset_index()
+            failure_dist.columns = ['failures', 'count']
+            fig_bar_failures = px.bar(
+                failure_dist,
+                x='failures',
+                y='count', 
+                title='Number of Students by Past Failures',
+                labels={'failures': 'Number of Past Failures', 'count': 'Number of Students'},
+                color='count',
+                color_continuous_scale='reds'
+            )
+            st.plotly_chart(fig_bar_failures, use_container_width=True)
+        
+        with col4:
+            # Bar chart: Performance by Address Type
+            address_perf = filtered_df.groupby('address')['Average_Grade'].mean().reset_index()
+            fig_bar_address = px.bar(
+                address_perf,
+                x='address', 
+                y='Average_Grade',
+                title='Average Grade by Address Type',
+                labels={'address': 'Address Type (U=Urban, R=Rural)', 'Average_Grade': 'Average Grade'},
+                color='Average_Grade',
+                color_continuous_scale='blues'
+            )
+            st.plotly_chart(fig_bar_address, use_container_width=True)
 
-            # Activity e: Create a heatmap to visualize correlations between features.
-            st.subheader("Activity E: Heatmap to Visualize Correlations between Features")
 
-            numeric_df = filtered_df.select_dtypes(include=[np.number])
-            corr = numeric_df.corr()
-            fig, ax = plt.subplots()
-            sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax, annot_kws={"size": 5})
-            ax.set_title('Correlation Heatmap of Numeric Features')
-            st.pyplot(fig)
 
-            # Enhanced explanation for correlation heatmap
-            strong_corr_pairs = []
-            for i in range(len(corr.columns)):
-                for j in range(i+1, len(corr.columns)):
-                    corr_val = abs(corr.iloc[i, j])
-                    if corr_val > 0.5:
-                        strong_corr_pairs.append((corr.columns[i], corr.columns[j], corr.iloc[i, j]))
+    with tab3:
+        st.header("🔍 Detailed Insights")
 
+        # Activity e: Create a heatmap to visualize correlations between features.
+        st.subheader("Activity E: Heatmap to Visualize Correlations between Features")
+
+        numeric_df = filtered_df.select_dtypes(include=[np.number])
+        corr = numeric_df.corr()
+        fig, ax = plt.subplots()
+        sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax, annot_kws={"size": 5})
+        ax.set_title('Correlation Heatmap of Numeric Features')
+        st.pyplot(fig)
+
+        # Enhanced explanation for correlation heatmap
+        strong_corr_pairs = []
+        for i in range(len(corr.columns)):
+            for j in range(i+1, len(corr.columns)):
+                corr_val = abs(corr.iloc[i, j])
+                if corr_val > 0.5:
+                    strong_corr_pairs.append((corr.columns[i], corr.columns[j], corr.iloc[i, j]))
+
+        st.markdown("""
+        ### 🔍 **Correlation Analysis Insights:**
+        
+        **📊 Key Findings:**
+        """)
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
             st.markdown("""
-            ### 🔍 **Correlation Analysis Insights:**
-            
-            **📊 Key Findings:**
+            **🎯 Strong Positive Correlations:**
+            - **G1 ↔ G2 ↔ G3**: Academic consistency across periods
+            - **Medu ↔ Fedu**: Parental education alignment  
+            - **Dalc ↔ Walc**: Daily and weekend alcohol consumption patterns
             """)
 
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.markdown("""
-                **🎯 Strong Positive Correlations:**
-                - **G1 ↔ G2 ↔ G3**: Academic consistency across periods
-                - **Medu ↔ Fedu**: Parental education alignment  
-                - **Dalc ↔ Walc**: Daily and weekend alcohol consumption patterns
-                """)
-
-            with col2:
-                st.markdown("""
-                **📈 Moderate Correlations:**
-                - **Parent Education ↔ Student Grades**: Family background influence
-                - **Study Time ↔ Academic Performance**: Effort-outcome relationship
-                """)
-            
-            with col3:
-                st.markdown("""
-                **💡 Insights:**
-                - **Family factors** significantly influence student outcomes
-                - **Behavioral patterns** (alcohol, absences) predict academic risk
-                """)
-
-
-
-        with tab4:
-            st.header("📋 Data Exploration")
-
-            # Activity f: Display a boxplot for exploratory visualization of numeric features.
-            st.subheader("Activity F: Boxplot for Exploratory Visualization of Numeric Features")
-            
-            fig, ax = plt.subplots(figsize=(12, 8))
-
-            # Normalize and bring to same scale for better visualization
-            normalized_data = []
-            labels = []
-
-            for col in numeric_df.columns:
-                if filtered_df[col].max() != filtered_df[col].min():  # Avoid division by zero
-                    normalized_values = (filtered_df[col] - filtered_df[col].min()) / (filtered_df[col].max() - filtered_df[col].min())
-                else:
-                    normalized_values = filtered_df[col] * 0  # All same value
-                normalized_data.append(normalized_values)
-                labels.append(col)
-
-            ax.boxplot(normalized_data, labels=labels)
-            ax.set_title('Boxplot for Exploratory Visualization of Numeric Features')
-            ax.set_xlabel('Features')
-            ax.set_ylabel('Normalized Values')
-            ax.set_xticklabels(labels, rotation=45, ha='right')
-            st.pyplot(fig)
-
-            # Explanation for Boxplot
+        with col2:
             st.markdown("""
-            ### 📦 **Boxplot Distribution Analysis:**
-            
-            **🔍 What the Boxplot Shows:**
+            **📈 Moderate Correlations:**
+            - **Parent Education ↔ Student Grades**: Family background influence
+            - **Study Time ↔ Academic Performance**: Effort-outcome relationship
+            """)
+        
+        with col3:
+            st.markdown("""
+            **💡 Insights:**
+            - **Family factors** significantly influence student outcomes
+            - **Behavioral patterns** (alcohol, absences) predict academic risk
             """)
 
+
+        # NEW: Pair Plot Section
+        st.subheader("🔗 Pair Plot Analysis")
+        
+        # Allow user to select features for pair plot
+        numeric_columns = filtered_df.select_dtypes(include=[np.number]).columns.tolist()
+        
+        # Remove Average_Grade from options since we'll use it as color
+        available_features = [col for col in numeric_columns if col != 'Average_Grade']
+        
+        selected_features = st.multiselect(
+            "Select features for pair plot analysis (recommended: 3-5 features):",
+            available_features,
+            default=['G1', 'G2', 'G3', 'studytime'][:4]  # Default selection
+        )
+        
+        if len(selected_features) >= 2:
+            st.write(f"**Pair Plot: {', '.join(selected_features)} colored by Gender**")
+            
+            # Create pair plot using plotly
+            fig_pair = px.scatter_matrix(
+                filtered_df[selected_features + ['sex']], 
+                dimensions=selected_features,
+                color='sex',
+                title=f"Pair Plot: {', '.join(selected_features)}",
+                labels={col: col for col in selected_features}
+            )
+            fig_pair.update_layout(height=700, width=800)
+            st.plotly_chart(fig_pair, use_container_width=True)
+            
+            # Explanation for pair plot
+            st.markdown("""
+            **🔍 Pair Plot Insights:**
+            - **Diagonal Understanding**: Each subplot shows the relationship between two variables
+            - **Color Coding**: Points are colored by gender to reveal gender-based patterns
+            - **Correlation Patterns**: Look for linear relationships, clusters, and outliers
+            - **Feature Interactions**: Identify which variable combinations show strongest relationships
+            """)
+        
+        else:
+            st.write("Please select at least 2 features to generate the pair plot.")
+        
+
+
+
+    with tab4:
+        st.header("📋 Data Exploration")
+
+        # Activity f: Display a boxplot for exploratory visualization of numeric features.
+        st.subheader("Activity F: Boxplot for Exploratory Visualization of Numeric Features")
+        
+        fig, ax = plt.subplots(figsize=(12, 8))
+
+        # Normalize and bring to same scale for better visualization
+        normalized_data = []
+        labels = []
+
+        for col in numeric_df.columns:
+            if filtered_df[col].max() != filtered_df[col].min():  # Avoid division by zero
+                normalized_values = (filtered_df[col] - filtered_df[col].min()) / (filtered_df[col].max() - filtered_df[col].min())
+            else:
+                normalized_values = filtered_df[col] * 0  # All same value
+            normalized_data.append(normalized_values)
+            labels.append(col)
+
+        ax.boxplot(normalized_data, labels=labels)
+        ax.set_title('Boxplot for Exploratory Visualization of Numeric Features')
+        ax.set_xlabel('Features')
+        ax.set_ylabel('Normalized Values')
+        ax.set_xticklabels(labels, rotation=45, ha='right')
+        st.pyplot(fig)
+
+        # Explanation for Boxplot
+        st.markdown("""
+        ### 📦 **Boxplot Distribution Analysis:**
+        
+        **🔍 What the Boxplot Shows:**
+        """)
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.markdown("""
+            - **Box**: Interquartile range (25th to 75th percentile)
+            - **Line in Box**: Median (50th percentile)  
+            """)
+
+        with col2:
+            st.markdown("""
+            - **Whiskers**: Data range within 1.5 × IQR
+            - **Dots**: Outliers beyond whiskers
+            """)
+        
+        st.markdown("""
+        **📊 Key Insights:**
+        """)
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("""
+            **🎯 Grade Distributions (G1, G2, G3):**
+            - **Median Performance**: Around 0.5 on normalized scale
+            - **Spread**: Wide distribution indicates diverse student abilities
+            - **Outliers**: Students with exceptionally high/low performance
+            """)
+        
+        with col2:
+            st.markdown("""
+            **📈 Other Feature Patterns:**
+            - **Age**: Concentrated around median age with few outliers
+            - **Study Time**: Most students study 2-5 hours weekly  
+            - **Absences**: Right-skewed distribution (few students with many absences)
+            - **Failures**: Most students have 0 failures, few with multiple
+            """)
+        
+        st.markdown("""
+        **💡 Practical Implications:**
+        - **Normal Distribution**: Grades follow expected bell curve pattern
+        - **Risk Identification**: Outliers in absences/failures need attention
+        - **Resource Allocation**: Understanding typical ranges helps in planning interventions
+        """)
+
+
+        # NEW: Additional Bar Chart Analysis
+        st.subheader("📊 Detailed Category Analysis")
+        
+        # Interactive bar chart selector
+        categorical_columns = ['school', 'sex', 'address', 'famsize', 'Pstatus', 'Mjob', 'Fjob']
+        
+        selected_category = st.selectbox(
+            "Select categorical feature for detailed analysis:",
+            categorical_columns,
+            index=0
+        )
+        
+        if selected_category:
+            # Count distribution
             col1, col2 = st.columns(2)
-
-            with col1:
-                st.markdown("""
-                - **Box**: Interquartile range (25th to 75th percentile)
-                - **Line in Box**: Median (50th percentile)  
-                """)
-
-            with col2:
-                st.markdown("""
-                - **Whiskers**: Data range within 1.5 × IQR
-                - **Dots**: Outliers beyond whiskers
-                """)
             
-            st.markdown("""
-            **📊 Key Insights:**
-            """)
-
-            col1, col2 = st.columns(2)
             with col1:
-                st.markdown("""
-                **🎯 Grade Distributions (G1, G2, G3):**
-                - **Median Performance**: Around 0.5 on normalized scale
-                - **Spread**: Wide distribution indicates diverse student abilities
-                - **Outliers**: Students with exceptionally high/low performance
-                """)
+                category_counts = filtered_df[selected_category].value_counts()
+                fig_cat_dist = px.bar(
+                    x=category_counts.index,
+                    y=category_counts.values,
+                    title=f'Distribution of {selected_category.capitalize()}',
+                    labels={'x': selected_category, 'y': 'Count'}
+                )
+                st.plotly_chart(fig_cat_dist, use_container_width=True)
             
             with col2:
-                st.markdown("""
-                **📈 Other Feature Patterns:**
-                - **Age**: Concentrated around median age with few outliers
-                - **Study Time**: Most students study 2-5 hours weekly  
-                - **Absences**: Right-skewed distribution (few students with many absences)
-                - **Failures**: Most students have 0 failures, few with multiple
-                """)
+                category_performance = filtered_df.groupby(selected_category)['Average_Grade'].mean().reset_index()
+                fig_cat_perf = px.bar(
+                    category_performance,
+                    x=selected_category,
+                    y='Average_Grade',
+                    title=f'Average Grade by {selected_category.capitalize()}',
+                    color='Average_Grade',
+                    color_continuous_scale='plasma'
+                )
+                st.plotly_chart(fig_cat_perf, use_container_width=True)
+        
+        # Summary statistics for selected category
+        if selected_category:
+            st.write(f"**Statistical Summary for {selected_category.capitalize()}:**")
+            summary_stats = filtered_df.groupby(selected_category).agg({
+                'Average_Grade': ['count', 'mean', 'std', 'min', 'max'],
+                'studytime': 'mean',
+                'failures': 'mean',
+                'absences': 'mean'
+            }).round(2)
             
-            st.markdown("""
-            **💡 Practical Implications:**
-            - **Normal Distribution**: Grades follow expected bell curve pattern
-            - **Risk Identification**: Outliers in absences/failures need attention
-            - **Resource Allocation**: Understanding typical ranges helps in planning interventions
-            """)
+            summary_stats.columns = ['Count', 'Mean_Grade', 'Std_Grade', 'Min_Grade', 'Max_Grade', 'Avg_StudyTime', 'Avg_Failures', 'Avg_Absences']
+            st.write(summary_stats)
