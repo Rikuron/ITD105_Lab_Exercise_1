@@ -11,6 +11,7 @@ A comprehensive web-based dashboard built with Streamlit for analyzing student a
 | **[ANSWERS.md](ANSWERS.md)** | 📊 Detailed analysis answering research questions |
 | **[student_performance.py](student_performance.py)** | 🎯 Interactive Streamlit dashboard |
 | **[requirements.txt](requirements.txt)** | 📋 Required Python packages |
+| **[Live Demo](https://rikuron-itd105-lab-exercise-1-student-performance-aum43n.streamlit.app)** | ▶️ Live Demo hosted on Streamlit Community Cloud |
 
 ### Quick Links:
 - 🔍 **[View Analysis Results →](ANSWERS.md)**
